@@ -1,9 +1,14 @@
 "use client";
 
-import { addDays, format, startOfDay } from "date-fns";
+import { addDays, format, isValid, startOfDay } from "date-fns";
+import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
+
+const DayPicker = dynamic(
+  () => import("react-day-picker").then((m) => m.DayPicker),
+  { ssr: false, loading: () => null },
+);
 
 const DEFAULT_COMMENCE = "2026-03-21";
 
@@ -11,7 +16,8 @@ function parseDateInput(value: string): Date | null {
   const parts = value.split("-").map(Number);
   if (parts.length !== 3 || parts.some((n) => Number.isNaN(n))) return null;
   const [y, m, d] = parts;
-  return startOfDay(new Date(y, m - 1, d));
+  const d0 = startOfDay(new Date(y, m - 1, d));
+  return isValid(d0) ? d0 : null;
 }
 
 export default function Home() {
@@ -21,7 +27,7 @@ export default function Home() {
   const datePickerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!calendarOpen) return;
+    if (!calendarOpen || typeof document === "undefined") return;
     const onDocMouseDown = (e: MouseEvent) => {
       if (!datePickerRef.current?.contains(e.target as Node)) {
         setCalendarOpen(false);
@@ -43,10 +49,11 @@ export default function Home() {
   const deadline = useMemo(() => {
     const commence = parseDateInput(commenceStr);
     if (!commence) return null as Date | null;
-    return addDays(commence, periodDays);
+    const end = addDays(commence, periodDays);
+    return isValid(end) ? end : null;
   }, [commenceStr, periodDays]);
 
-  const commenceDate = parseDateInput(commenceStr);
+  const commenceDate = useMemo(() => parseDateInput(commenceStr), [commenceStr]);
 
   return (
     <main

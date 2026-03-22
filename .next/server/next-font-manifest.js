@@ -1,1 +1,0 @@
-self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{\"/Users/krisztian/Library/CloudStorage/Dropbox/Cursor/Speedy_Calc/app/layout\":[\"static/media/01cf33b220835810-s.p.woff2\",\"static/media/e431776a349daa40-s.p.woff2\",\"static/media/e807dee2426166ad-s.p.woff2\"]},\"appUsingSizeAdjust\":true,\"pagesUsingSizeAdjust\":false}"
