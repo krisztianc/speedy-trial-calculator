@@ -85,15 +85,31 @@ export default function Home() {
             Washington Speedy Trial Calculator
           </h1>
           <p
-            style={{
-              margin: 0,
-              fontSize: "0.95rem",
-              color: "#4a5568",
-              fontFamily: "var(--font-open-sans), sans-serif",
-            }}
-          >
-            CrR 3.3 / CrRLJ 3.3
-          </p>
+  style={{
+    margin: 0,
+    fontSize: "0.95rem",
+    color: "#4a5568",
+    fontFamily: "var(--font-open-sans), sans-serif",
+  }}
+>
+  <a
+    href="https://www.courts.wa.gov/court_rules/pdf/CrR/SUP_CrR_03_03_00.pdf"
+    target="_blank"
+    rel="noopener noreferrer"
+    style={{ color: "#790000", textDecoration: "underline", cursor: "pointer" }}
+  >
+    CrR 3.3
+  </a>{" "}
+  /{" "}
+  <a
+    href="https://www.courts.wa.gov/court_rules/pdf/CrRLJ/CLJ_CRRLJ_03_03_00.pdf"
+    target="_blank"
+    rel="noopener noreferrer"
+    style={{ color: "#790000", textDecoration: "underline", cursor: "pointer" }}
+  >
+    CrRLJ 3.3
+  </a>
+</p>
         </header>
 
         <section
@@ -318,6 +334,29 @@ export default function Home() {
             {deadline ? format(deadline, "MMMM d, yyyy") : "—"}
           </p>
         </section>
+        <footer
+          style={{
+            marginTop: "1.75rem",
+            textAlign: "center",
+            fontSize: "0.85rem",
+            color: "#4a5568",
+            fontFamily: "var(--font-open-sans), sans-serif",
+          }}
+        >
+          Coded by{" "}
+          <a
+            href="https://thepdxlawyer.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: "#790000",
+              textDecoration: "none",
+              fontWeight: 500,
+            }}
+          >
+            Kris Carrasco Attorney at Law
+          </a>
+        </footer>
       </div>
     </main>
   );
