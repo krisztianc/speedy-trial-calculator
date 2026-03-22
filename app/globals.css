@@ -1,0 +1,30 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font-open-sans), system-ui, sans-serif;
+  background: #ffffff;
+  color: #1a202c;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* react-day-picker — light surface, burgundy accent */
+.commence-day-picker {
+  --rdp-accent-color: #790000;
+  --rdp-accent-background-color: rgba(121, 0, 0, 0.12);
+  --rdp-outside-opacity: 0.45;
+  color: #1a202c;
+}
+
+.commence-day-picker .rdp-day_button {
+  color: inherit;
+}
