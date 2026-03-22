@@ -22,7 +22,7 @@ function parseDateInput(value: string): Date | null {
 
 export default function Home() {
   const [commenceStr, setCommenceStr] = useState(DEFAULT_COMMENCE);
-  const [inCustody, setInCustody] = useState(true);
+  const [inCustody, setInCustody] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const datePickerRef = useRef<HTMLDivElement>(null);
 
