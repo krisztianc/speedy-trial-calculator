@@ -428,7 +428,7 @@ export default function Home() {
                     key={row.id}
                     style={{
                       display: "grid",
-                      gridTemplateColumns: "1fr 1fr auto",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
                       gap: "0.5rem",
                       alignItems: "end",
                     }}
@@ -517,6 +517,7 @@ export default function Home() {
                         )
                       }
                       style={{
+                        width: "100%",
                         padding: "0.5rem 0.6rem",
                         fontSize: "0.8rem",
                         borderRadius: "8px",
@@ -525,8 +526,6 @@ export default function Home() {
                         color: "#790000",
                         cursor: "pointer",
                         fontFamily: "var(--font-open-sans), sans-serif",
-                        whiteSpace: "nowrap",
-                        marginBottom: "1px",
                       }}
                     >
                       Remove
