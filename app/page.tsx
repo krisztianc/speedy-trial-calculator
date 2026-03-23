@@ -426,9 +426,10 @@ export default function Home() {
                 {excludedPeriods.map((row) => (
                   <div
                     key={row.id}
+                    className="excluded-row"
                     style={{
                       display: "grid",
-                      gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+                      gridTemplateColumns: "1fr 1fr auto",
                       gap: "0.5rem",
                       alignItems: "end",
                     }}
@@ -471,6 +472,7 @@ export default function Home() {
                         }}
                       />
                     </div>
+
                     <div>
                       <label
                         htmlFor={`ex-end-${row.id}`}
@@ -509,6 +511,7 @@ export default function Home() {
                         }}
                       />
                     </div>
+
                     <button
                       type="button"
                       onClick={() =>
@@ -516,6 +519,7 @@ export default function Home() {
                           rows.filter((r) => r.id !== row.id),
                         )
                       }
+                      className="excluded-remove"
                       style={{
                         width: "100%",
                         padding: "0.5rem 0.6rem",
@@ -533,6 +537,7 @@ export default function Home() {
                   </div>
                 ))}
               </div>
+
               <button
                 type="button"
                 onClick={() => {
