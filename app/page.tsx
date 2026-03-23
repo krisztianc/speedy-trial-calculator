@@ -428,13 +428,13 @@ export default function Home() {
                     key={row.id}
                     className="excluded-row"
                     style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr 1fr auto",
+                      display: "flex",
+                      flexWrap: "wrap",
                       gap: "0.5rem",
-                      alignItems: "end",
+                      alignItems: "flex-end",
                     }}
                   >
-                    <div>
+                    <div style={{ flex: "1 1 140px", minWidth: 0 }}>
                       <label
                         htmlFor={`ex-start-${row.id}`}
                         style={{
@@ -473,7 +473,7 @@ export default function Home() {
                       />
                     </div>
 
-                    <div>
+                    <div style={{ flex: "1 1 140px", minWidth: 0 }}>
                       <label
                         htmlFor={`ex-end-${row.id}`}
                         style={{
@@ -521,6 +521,7 @@ export default function Home() {
                       }
                       className="excluded-remove"
                       style={{
+                        flex: "1 1 100%",
                         width: "100%",
                         padding: "0.5rem 0.6rem",
                         fontSize: "0.8rem",
