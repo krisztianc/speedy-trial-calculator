@@ -424,17 +424,8 @@ export default function Home() {
                 }}
               >
                 {excludedPeriods.map((row) => (
-                  <div
-                    key={row.id}
-                    className="excluded-row"
-                    style={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: "0.5rem",
-                      alignItems: "flex-end",
-                    }}
-                  >
-                    <div style={{ flex: "1 1 140px", minWidth: 0 }}>
+                  <div key={row.id} className="excluded-row">
+                    <div className="excluded-field">
                       <label
                         htmlFor={`ex-start-${row.id}`}
                         style={{
@@ -473,7 +464,7 @@ export default function Home() {
                       />
                     </div>
 
-                    <div style={{ flex: "1 1 140px", minWidth: 0 }}>
+                    <div className="excluded-field">
                       <label
                         htmlFor={`ex-end-${row.id}`}
                         style={{
@@ -521,8 +512,7 @@ export default function Home() {
                       }
                       className="excluded-remove"
                       style={{
-                        flex: "1 1 100%",
-                        width: "100%",
+                        flex: "0 0 auto",
                         padding: "0.5rem 0.6rem",
                         fontSize: "0.8rem",
                         borderRadius: "8px",
@@ -593,7 +583,7 @@ export default function Home() {
           >
             Trial deadline
           </p>
-          {excludedPeriods.length > 0 && (
+          {totalExcludedDays > 0 && (
             <div
               style={{
                 margin: "0 0 1rem",
