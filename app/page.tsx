@@ -16,7 +16,13 @@ const DayPicker = dynamic(
   { ssr: false, loading: () => null },
 );
 
-const DEFAULT_COMMENCE = "2026-03-21";
+function getTodayString() {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, "0");
+  const dd = String(today.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
 
 function parseDateInput(value: string): Date | null {
   const parts = value.split("-").map(Number);
@@ -56,7 +62,7 @@ function mergeIntervals(
 }
 
 export default function Home() {
-  const [commenceStr, setCommenceStr] = useState(DEFAULT_COMMENCE);
+  const [commenceStr, setCommenceStr] = useState(getTodayString());
   const [inCustody, setInCustody] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [excludedOpen, setExcludedOpen] = useState(false);
