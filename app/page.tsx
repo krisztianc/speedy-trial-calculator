@@ -769,16 +769,31 @@ export default function Home() {
             {finalDeadline ? format(finalDeadline, "MMMM d, yyyy") : "—"}
           </p>
           {elapsedDays !== null && (
-            <p
-              style={{
-                margin: "0.75rem 0 0",
-                fontSize: "1.8rem",
-                color: "#4a5568",
-                fontFamily: "var(--font-open-sans), sans-serif",
-              }}
-            >
-              Days Elapsed: {elapsedDays}
-            </p>
+            <>
+              <p
+                style={{
+                  margin: "0.75rem 0 0",
+                  fontSize: "1.8rem",
+                  color:
+                    elapsedDays > periodDays ? "#790000" : "#4a5568",
+                  fontFamily: "var(--font-open-sans), sans-serif",
+                }}
+              >
+                Days Elapsed: {elapsedDays}
+              </p>
+              {elapsedDays > periodDays && (
+                <p
+                  style={{
+                    margin: "0.35rem 0 0",
+                    fontSize: "0.9rem",
+                    color: "#790000",
+                    fontFamily: "var(--font-open-sans), sans-serif",
+                  }}
+                >
+                  Past deadline
+                </p>
+              )}
+            </>
           )}
         </section>
         <footer
