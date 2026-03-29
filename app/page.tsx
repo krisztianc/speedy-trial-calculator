@@ -67,6 +67,8 @@ export default function Home() {
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [excludedOpen, setExcludedOpen] = useState(false);
   const [excludedPeriods, setExcludedPeriods] = useState<ExcludedPeriod[]>([]);
+  const [trialDateStr, setTrialDateStr] = useState("");
+  const [trialDateOpen, setTrialDateOpen] = useState(true);
   const datePickerRef = useRef<HTMLDivElement>(null);
   const excludedIdRef = useRef(0);
 
@@ -138,6 +140,43 @@ export default function Home() {
   }, [baseDeadline, totalExcludedDays]);
 
   const commenceDate = useMemo(() => parseDateInput(commenceStr), [commenceStr]);
+
+  const elapsedDays = useMemo(() => {
+    const commence = parseDateInput(commenceStr);
+    const trial = parseDateInput(trialDateStr.trim());
+    if (!trial || !isValid(trial)) return null;
+    if (!commence || !isValid(commence)) return null;
+    if (trial < commence) return 0;
+
+    const totalDays = inclusiveDayCount(commence, trial);
+
+    const raw: { start: Date; end: Date }[] = [];
+    for (const p of excludedPeriods) {
+      const s = p.start.trim() ? parseDateInput(p.start) : null;
+      const e = p.end.trim() ? parseDateInput(p.end) : null;
+
+      if (!s || !e || !isValid(s) || !isValid(e)) continue;
+      if (e < s) continue;
+
+      if (e < commence) continue;
+      if (s > trial) continue;
+
+      const clippedStart = s < commence ? commence : s;
+      const clippedEnd = e > trial ? trial : e;
+
+      if (clippedEnd < clippedStart) continue;
+
+      raw.push({ start: clippedStart, end: clippedEnd });
+    }
+
+    const merged = mergeIntervals(raw);
+    let excludedDaysWithinRange = 0;
+    for (const m of merged) {
+      excludedDaysWithinRange += inclusiveDayCount(m.start, m.end);
+    }
+
+    return totalDays - excludedDaysWithinRange;
+  }, [commenceStr, trialDateStr, excludedPeriods]);
 
   return (
     <main
@@ -570,6 +609,100 @@ export default function Home() {
           style={{
             background: "#f7fafc",
             border: "1px solid #e2e8f0",
+            borderRadius: "12px",
+            marginBottom: "1.5rem",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+            overflow: "hidden",
+          }}
+        >
+          <button
+            type="button"
+            aria-expanded={trialDateOpen}
+            onClick={() => setTrialDateOpen((o) => !o)}
+            style={{
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "0.75rem",
+              padding: "1rem clamp(1rem, 3vw, 1.75rem)",
+              border: "none",
+              background: "#f7fafc",
+              color: "#1a202c",
+              fontSize: "0.95rem",
+              fontWeight: 600,
+              textAlign: "left",
+              cursor: "pointer",
+              fontFamily: "var(--font-open-sans), sans-serif",
+            }}
+          >
+            <span>Trial Date</span>
+            <span
+              aria-hidden
+              style={{
+                fontSize: "1.25rem",
+                lineHeight: 1,
+                color: "#790000",
+                fontWeight: 400,
+              }}
+            >
+              {trialDateOpen ? "−" : "+"}
+            </span>
+          </button>
+          {trialDateOpen && (
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                alignItems: "flex-end",
+                gap: "0.5rem",
+                padding: "0.85rem clamp(1rem, 3vw, 1.75rem) 1.25rem",
+                borderTop: "1px solid #e2e8f0",
+              }}
+            >
+              <input
+                id="trial-date"
+                type="date"
+                value={trialDateStr}
+                onChange={(e) => setTrialDateStr(e.target.value)}
+                aria-label="Trial date"
+                style={{
+                  flex: "1 1 140px",
+                  minWidth: 0,
+                  padding: "0.5rem 0.45rem",
+                  fontSize: "0.9rem",
+                  borderRadius: "8px",
+                  border: "1px solid #cbd5e0",
+                  background: "#ffffff",
+                  color: "#1a202c",
+                  fontFamily: "var(--font-open-sans), sans-serif",
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => setTrialDateStr("")}
+                style={{
+                  flex: "0 0 auto",
+                  padding: "0.5rem 0.6rem",
+                  fontSize: "0.8rem",
+                  borderRadius: "8px",
+                  border: "1px solid #cbd5e0",
+                  background: "#ffffff",
+                  color: "#790000",
+                  cursor: "pointer",
+                  fontFamily: "var(--font-open-sans), sans-serif",
+                }}
+              >
+                Remove
+              </button>
+            </div>
+          )}
+        </section>
+
+        <section
+          style={{
+            background: "#f7fafc",
+            border: "1px solid #e2e8f0",
             borderRadius: "14px",
             padding: "clamp(1.25rem, 4vw, 2rem)",
             textAlign: "center",
@@ -635,6 +768,18 @@ export default function Home() {
           >
             {finalDeadline ? format(finalDeadline, "MMMM d, yyyy") : "—"}
           </p>
+          {elapsedDays !== null && (
+            <p
+              style={{
+                margin: "0.75rem 0 0",
+                fontSize: "1.8rem",
+                color: "#4a5568",
+                fontFamily: "var(--font-open-sans), sans-serif",
+              }}
+            >
+              Elapsed days: {elapsedDays}
+            </p>
+          )}
         </section>
         <footer
           style={{
