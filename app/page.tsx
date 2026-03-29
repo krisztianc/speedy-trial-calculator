@@ -181,7 +181,7 @@ export default function Home() {
   return (
     <main
       style={{
-        minHeight: "100vh",
+        minHeight: "100dvh",
         padding: "clamp(1.25rem, 4vw, 2.5rem)",
         display: "flex",
         justifyContent: "center",
