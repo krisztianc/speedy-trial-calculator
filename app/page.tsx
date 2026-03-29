@@ -777,7 +777,7 @@ export default function Home() {
                 fontFamily: "var(--font-open-sans), sans-serif",
               }}
             >
-              Elapsed days: {elapsedDays}
+              Days Elapsed: {elapsedDays}
             </p>
           )}
         </section>
