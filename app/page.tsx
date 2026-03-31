@@ -102,6 +102,7 @@ export default function Home() {
   const totalExcludedDays = useMemo(() => {
     const commence = parseDateInput(commenceStr);
     if (!commence || !isValid(commence)) return 0;
+    const excludedStart = addDays(commence, 1);
   
     const raw: { start: Date; end: Date }[] = [];
   
@@ -113,10 +114,10 @@ export default function Home() {
       if (e < s) continue;
   
       // Ignore intervals that end before commencement
-      if (e < commence) continue;
+      if (e < excludedStart) continue;
   
       // Clip intervals so they only count on or after commencement
-      const clippedStart = s < commence ? commence : s;
+      const clippedStart = s < excludedStart ? excludedStart : s;
   
       if (e < clippedStart) continue;
   
@@ -130,7 +131,7 @@ export default function Home() {
       total += inclusiveDayCount(m.start, m.end);
     }
   
-    return total;
+    return Math.max(0, total);
   }, [excludedPeriods, commenceStr]);
 
   const finalDeadline = useMemo(() => {
@@ -147,8 +148,9 @@ export default function Home() {
     if (!trial || !isValid(trial)) return null;
     if (!commence || !isValid(commence)) return null;
     if (trial < commence) return 0;
+    const elapsedStart = addDays(commence, 1);
 
-    const totalDays = inclusiveDayCount(commence, trial);
+    const totalDays = differenceInCalendarDays(trial, commence);
 
     const raw: { start: Date; end: Date }[] = [];
     for (const p of excludedPeriods) {
@@ -158,10 +160,10 @@ export default function Home() {
       if (!s || !e || !isValid(s) || !isValid(e)) continue;
       if (e < s) continue;
 
-      if (e < commence) continue;
+      if (e < elapsedStart) continue;
       if (s > trial) continue;
 
-      const clippedStart = s < commence ? commence : s;
+      const clippedStart = s < elapsedStart ? elapsedStart : s;
       const clippedEnd = e > trial ? trial : e;
 
       if (clippedEnd < clippedStart) continue;
@@ -175,7 +177,7 @@ export default function Home() {
       excludedDaysWithinRange += inclusiveDayCount(m.start, m.end);
     }
 
-    return totalDays - excludedDaysWithinRange;
+    return Math.max(0, totalDays - excludedDaysWithinRange);
   }, [commenceStr, trialDateStr, excludedPeriods]);
 
   return (
