@@ -79,8 +79,9 @@ export default function Home() {
   const trialDatePickerRef = useRef<HTMLDivElement>(null);
   const excludedIdRef = useRef(0);
 
-  const calFooterTodayButtonStyle = {
-    marginTop: "0.4rem",
+  const calTodayButtonStyle = {
+    width: "100%",
+    marginBottom: "0.5rem",
     padding: "0.4rem 0.6rem",
     fontSize: "0.85rem",
     borderRadius: "8px",
@@ -352,7 +353,7 @@ export default function Home() {
                 }}
               >
                 {commenceDate
-                  ? format(commenceDate, "yyyy-MM-dd")
+                  ? format(commenceDate, "MMMM d, yyyy")
                   : "Select date"}
               </button>
               {calendarOpen && (
@@ -373,6 +374,19 @@ export default function Home() {
                     boxShadow: "0 10px 40px rgba(0,0,0,0.12)",
                   }}
                 >
+                  {showCommenceCalToday && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCommenceStr(todayStr);
+                        setCalendarMonth(startOfMonth(today));
+                        setCalendarOpen(false);
+                      }}
+                      style={calTodayButtonStyle}
+                    >
+                      Today
+                    </button>
+                  )}
                   <DayPicker
                     mode="single"
                     className="commence-day-picker"
@@ -387,21 +401,6 @@ export default function Home() {
                         setCalendarOpen(false);
                       }
                     }}
-                    footer={
-                      showCommenceCalToday ? (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setCommenceStr(todayStr);
-                            setCalendarMonth(startOfMonth(today));
-                            setCalendarOpen(false);
-                          }}
-                          style={calFooterTodayButtonStyle}
-                        >
-                          Today
-                        </button>
-                      ) : null
-                    }
                   />
                 </div>
               )}
@@ -766,7 +765,9 @@ export default function Home() {
                     fontFamily: "var(--font-open-sans), sans-serif",
                   }}
                 >
-                  {trialDate ? format(trialDate, "yyyy-MM-dd") : "Select date"}
+                  {trialDate
+                    ? format(trialDate, "MMMM d, yyyy")
+                    : "Select date"}
                 </button>
                 {trialCalendarOpen && (
                   <div
@@ -785,7 +786,20 @@ export default function Home() {
                       borderRadius: "12px",
                       boxShadow: "0 10px 40px rgba(0,0,0,0.12)",
                     }}
-                  >
+                    >
+                    {showTrialCalToday && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setTrialDateStr(todayStr);
+                          setTrialCalendarMonth(startOfMonth(today));
+                          setTrialCalendarOpen(false);
+                        }}
+                        style={calTodayButtonStyle}
+                      >
+                        Today
+                      </button>
+                    )}
                     <DayPicker
                       mode="single"
                       className="commence-day-picker"
@@ -800,21 +814,6 @@ export default function Home() {
                           setTrialCalendarOpen(false);
                         }
                       }}
-                      footer={
-                        showTrialCalToday ? (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setTrialDateStr(todayStr);
-                              setTrialCalendarMonth(startOfMonth(today));
-                              setTrialCalendarOpen(false);
-                            }}
-                            style={calFooterTodayButtonStyle}
-                          >
-                            Today
-                          </button>
-                        ) : null
-                      }
                     />
                   </div>
                 )}
