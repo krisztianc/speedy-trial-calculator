@@ -71,7 +71,9 @@ export default function Home() {
   const [excludedPeriods, setExcludedPeriods] = useState<ExcludedPeriod[]>([]);
   const [trialDateStr, setTrialDateStr] = useState("");
   const [trialDateOpen, setTrialDateOpen] = useState(true);
+  const [trialCalendarOpen, setTrialCalendarOpen] = useState(false);
   const datePickerRef = useRef<HTMLDivElement>(null);
+  const trialDatePickerRef = useRef<HTMLDivElement>(null);
   const excludedIdRef = useRef(0);
 
   useEffect(() => {
@@ -91,6 +93,24 @@ export default function Home() {
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [calendarOpen]);
+
+  useEffect(() => {
+    if (!trialCalendarOpen || typeof document === "undefined") return;
+    const onDocMouseDown = (e: MouseEvent) => {
+      if (!trialDatePickerRef.current?.contains(e.target as Node)) {
+        setTrialCalendarOpen(false);
+      }
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setTrialCalendarOpen(false);
+    };
+    document.addEventListener("mousedown", onDocMouseDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onDocMouseDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [trialCalendarOpen]);
 
   useEffect(() => {
     const commence = parseDateInput(commenceStr);
@@ -152,6 +172,7 @@ export default function Home() {
   }, [baseDeadline, totalExcludedDays]);
 
   const commenceDate = useMemo(() => parseDateInput(commenceStr), [commenceStr]);
+  const trialDate = useMemo(() => parseDateInput(trialDateStr), [trialDateStr]);
 
   const elapsedDays = useMemo(() => {
     const commence = parseDateInput(commenceStr);
@@ -701,24 +722,66 @@ export default function Home() {
                 borderTop: "1px solid #e2e8f0",
               }}
             >
-              <input
-                id="trial-date"
-                type="date"
-                value={trialDateStr}
-                onChange={(e) => setTrialDateStr(e.target.value)}
-                aria-label="Trial date"
-                style={{
-                  flex: "1 1 140px",
-                  minWidth: 0,
-                  padding: "0.5rem 0.45rem",
-                  fontSize: "0.9rem",
-                  borderRadius: "8px",
-                  border: "1px solid #cbd5e0",
-                  background: "#ffffff",
-                  color: "#1a202c",
-                  fontFamily: "var(--font-open-sans), sans-serif",
-                }}
-              />
+              <div
+                ref={trialDatePickerRef}
+                style={{ position: "relative", flex: "1 1 140px", minWidth: 0 }}
+              >
+                <button
+                  id="trial-date"
+                  type="button"
+                  aria-haspopup="dialog"
+                  aria-expanded={trialCalendarOpen}
+                  aria-controls="trial-calendar"
+                  onClick={() => setTrialCalendarOpen((o) => !o)}
+                  style={{
+                    width: "100%",
+                    maxWidth: "100%",
+                    padding: "0.65rem 0.75rem",
+                    fontSize: "1rem",
+                    borderRadius: "8px",
+                    border: "1px solid #cbd5e0",
+                    background: "#ffffff",
+                    color: "#1a202c",
+                    textAlign: "left",
+                    cursor: "pointer",
+                    fontFamily: "var(--font-open-sans), sans-serif",
+                  }}
+                >
+                  {trialDate ? format(trialDate, "yyyy-MM-dd") : "Select date"}
+                </button>
+                {trialCalendarOpen && (
+                  <div
+                    id="trial-calendar"
+                    role="dialog"
+                    aria-label="Choose trial date"
+                    style={{
+                      position: "absolute",
+                      zIndex: 50,
+                      left: 0,
+                      right: 0,
+                      marginTop: "0.35rem",
+                      padding: "0.65rem 0.5rem 0.75rem",
+                      background: "#ffffff",
+                      border: "1px solid #e2e8f0",
+                      borderRadius: "12px",
+                      boxShadow: "0 10px 40px rgba(0,0,0,0.12)",
+                    }}
+                  >
+                    <DayPicker
+                      mode="single"
+                      className="commence-day-picker"
+                      selected={trialDate ?? undefined}
+                      defaultMonth={trialDate ?? new Date()}
+                      onSelect={(d) => {
+                        if (d) {
+                          setTrialDateStr(format(startOfDay(d), "yyyy-MM-dd"));
+                          setTrialCalendarOpen(false);
+                        }
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
               {trialDateStr !== todayStr && (
                 <button
                   type="button"
