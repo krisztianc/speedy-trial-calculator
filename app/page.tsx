@@ -72,9 +72,24 @@ export default function Home() {
   const [trialDateStr, setTrialDateStr] = useState("");
   const [trialDateOpen, setTrialDateOpen] = useState(true);
   const [trialCalendarOpen, setTrialCalendarOpen] = useState(false);
+  const [trialCalendarMonth, setTrialCalendarMonth] = useState(
+    startOfMonth(new Date()),
+  );
   const datePickerRef = useRef<HTMLDivElement>(null);
   const trialDatePickerRef = useRef<HTMLDivElement>(null);
   const excludedIdRef = useRef(0);
+
+  const calFooterTodayButtonStyle = {
+    marginTop: "0.4rem",
+    padding: "0.4rem 0.6rem",
+    fontSize: "0.85rem",
+    borderRadius: "8px",
+    border: "1px solid #cbd5e0",
+    background: "#ffffff",
+    color: "#790000",
+    cursor: "pointer",
+    fontFamily: "var(--font-open-sans), sans-serif",
+  } as const;
 
   useEffect(() => {
     if (!calendarOpen || typeof document === "undefined") return;
@@ -117,6 +132,12 @@ export default function Home() {
     if (!commence) return;
     setCalendarMonth(startOfMonth(commence));
   }, [commenceStr]);
+
+  useEffect(() => {
+    const d = parseDateInput(trialDateStr.trim());
+    if (d) setTrialCalendarMonth(startOfMonth(d));
+    else setTrialCalendarMonth(startOfMonth(new Date()));
+  }, [trialDateStr]);
 
   const today = startOfDay(new Date());
   const todayStr = format(today, "yyyy-MM-dd");
@@ -172,7 +193,16 @@ export default function Home() {
   }, [baseDeadline, totalExcludedDays]);
 
   const commenceDate = useMemo(() => parseDateInput(commenceStr), [commenceStr]);
-  const trialDate = useMemo(() => parseDateInput(trialDateStr), [trialDateStr]);
+  const trialDate = useMemo(
+    () => parseDateInput(trialDateStr.trim()),
+    [trialDateStr],
+  );
+
+  const showCommenceCalToday =
+    commenceDate != null &&
+    format(commenceDate, "yyyy-MM-dd") !== todayStr;
+  const showTrialCalToday =
+    trialDate != null && format(trialDate, "yyyy-MM-dd") !== todayStr;
 
   const elapsedDays = useMemo(() => {
     const commence = parseDateInput(commenceStr);
@@ -358,7 +388,7 @@ export default function Home() {
                       }
                     }}
                     footer={
-                      commenceStr !== todayStr ? (
+                      showCommenceCalToday ? (
                         <button
                           type="button"
                           onClick={() => {
@@ -366,17 +396,7 @@ export default function Home() {
                             setCalendarMonth(startOfMonth(today));
                             setCalendarOpen(false);
                           }}
-                          style={{
-                            marginTop: "0.4rem",
-                            padding: "0.4rem 0.6rem",
-                            fontSize: "0.85rem",
-                            borderRadius: "8px",
-                            border: "1px solid #cbd5e0",
-                            background: "#ffffff",
-                            color: "#790000",
-                            cursor: "pointer",
-                            fontFamily: "var(--font-open-sans), sans-serif",
-                          }}
+                          style={calFooterTodayButtonStyle}
                         >
                           Today
                         </button>
@@ -674,7 +694,6 @@ export default function Home() {
             borderRadius: "12px",
             marginBottom: "1.5rem",
             boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
-            overflow: "hidden",
           }}
         >
           <button
@@ -771,36 +790,35 @@ export default function Home() {
                       mode="single"
                       className="commence-day-picker"
                       selected={trialDate ?? undefined}
-                      defaultMonth={trialDate ?? new Date()}
+                      month={trialCalendarMonth}
+                      onMonthChange={setTrialCalendarMonth}
                       onSelect={(d) => {
                         if (d) {
-                          setTrialDateStr(format(startOfDay(d), "yyyy-MM-dd"));
+                          const selectedDay = startOfDay(d);
+                          setTrialDateStr(format(selectedDay, "yyyy-MM-dd"));
+                          setTrialCalendarMonth(startOfMonth(selectedDay));
                           setTrialCalendarOpen(false);
                         }
                       }}
+                      footer={
+                        showTrialCalToday ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setTrialDateStr(todayStr);
+                              setTrialCalendarMonth(startOfMonth(today));
+                              setTrialCalendarOpen(false);
+                            }}
+                            style={calFooterTodayButtonStyle}
+                          >
+                            Today
+                          </button>
+                        ) : null
+                      }
                     />
                   </div>
                 )}
               </div>
-              {trialDateStr !== todayStr && (
-                <button
-                  type="button"
-                  onClick={() => setTrialDateStr(todayStr)}
-                  style={{
-                    flex: "0 0 auto",
-                    padding: "0.5rem 0.6rem",
-                    fontSize: "0.8rem",
-                    borderRadius: "8px",
-                    border: "1px solid #cbd5e0",
-                    background: "#ffffff",
-                    color: "#790000",
-                    cursor: "pointer",
-                    fontFamily: "var(--font-open-sans), sans-serif",
-                  }}
-                >
-                  Today
-                </button>
-              )}
               {trialDateStr.trim() && (
                 <button
                   type="button"
