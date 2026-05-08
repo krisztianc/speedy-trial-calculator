@@ -6,6 +6,7 @@ import {
   format,
   isValid,
   startOfDay,
+  startOfMonth,
 } from "date-fns";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -63,6 +64,7 @@ function mergeIntervals(
 
 export default function Home() {
   const [commenceStr, setCommenceStr] = useState(getTodayString());
+  const [calendarMonth, setCalendarMonth] = useState(startOfMonth(new Date()));
   const [inCustody, setInCustody] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [excludedOpen, setExcludedOpen] = useState(false);
@@ -89,6 +91,15 @@ export default function Home() {
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [calendarOpen]);
+
+  useEffect(() => {
+    const commence = parseDateInput(commenceStr);
+    if (!commence) return;
+    setCalendarMonth(startOfMonth(commence));
+  }, [commenceStr]);
+
+  const today = startOfDay(new Date());
+  const todayStr = format(today, "yyyy-MM-dd");
 
   const periodDays = inCustody ? 60 : 90;
 
@@ -290,7 +301,7 @@ export default function Home() {
                 }}
               >
                 {commenceDate
-                  ? format(commenceDate, "MMMM d, yyyy")
+                  ? format(commenceDate, "yyyy-MM-dd")
                   : "Select date"}
               </button>
               {calendarOpen && (
@@ -315,13 +326,41 @@ export default function Home() {
                     mode="single"
                     className="commence-day-picker"
                     selected={commenceDate ?? undefined}
-                    defaultMonth={commenceDate ?? new Date()}
+                    month={calendarMonth}
+                    onMonthChange={setCalendarMonth}
                     onSelect={(d) => {
                       if (d) {
-                        setCommenceStr(format(startOfDay(d), "yyyy-MM-dd"));
+                        const selectedDay = startOfDay(d);
+                        setCommenceStr(format(selectedDay, "yyyy-MM-dd"));
+                        setCalendarMonth(startOfMonth(selectedDay));
                         setCalendarOpen(false);
                       }
                     }}
+                    footer={
+                      commenceStr !== todayStr ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCommenceStr(todayStr);
+                            setCalendarMonth(startOfMonth(today));
+                            setCalendarOpen(false);
+                          }}
+                          style={{
+                            marginTop: "0.4rem",
+                            padding: "0.4rem 0.6rem",
+                            fontSize: "0.85rem",
+                            borderRadius: "8px",
+                            border: "1px solid #cbd5e0",
+                            background: "#ffffff",
+                            color: "#790000",
+                            cursor: "pointer",
+                            fontFamily: "var(--font-open-sans), sans-serif",
+                          }}
+                        >
+                          Today
+                        </button>
+                      ) : null
+                    }
                   />
                 </div>
               )}
@@ -680,23 +719,44 @@ export default function Home() {
                   fontFamily: "var(--font-open-sans), sans-serif",
                 }}
               />
-              <button
-                type="button"
-                onClick={() => setTrialDateStr("")}
-                style={{
-                  flex: "0 0 auto",
-                  padding: "0.5rem 0.6rem",
-                  fontSize: "0.8rem",
-                  borderRadius: "8px",
-                  border: "1px solid #cbd5e0",
-                  background: "#ffffff",
-                  color: "#790000",
-                  cursor: "pointer",
-                  fontFamily: "var(--font-open-sans), sans-serif",
-                }}
-              >
-                Remove
-              </button>
+              {trialDateStr !== todayStr && (
+                <button
+                  type="button"
+                  onClick={() => setTrialDateStr(todayStr)}
+                  style={{
+                    flex: "0 0 auto",
+                    padding: "0.5rem 0.6rem",
+                    fontSize: "0.8rem",
+                    borderRadius: "8px",
+                    border: "1px solid #cbd5e0",
+                    background: "#ffffff",
+                    color: "#790000",
+                    cursor: "pointer",
+                    fontFamily: "var(--font-open-sans), sans-serif",
+                  }}
+                >
+                  Today
+                </button>
+              )}
+              {trialDateStr.trim() && (
+                <button
+                  type="button"
+                  onClick={() => setTrialDateStr("")}
+                  style={{
+                    flex: "0 0 auto",
+                    padding: "0.5rem 0.6rem",
+                    fontSize: "0.8rem",
+                    borderRadius: "8px",
+                    border: "1px solid #cbd5e0",
+                    background: "#ffffff",
+                    color: "#790000",
+                    cursor: "pointer",
+                    fontFamily: "var(--font-open-sans), sans-serif",
+                  }}
+                >
+                  Remove
+                </button>
+              )}
             </div>
           )}
         </section>
